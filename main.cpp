@@ -43,5 +43,41 @@ struct String : SElement{
 
 int main(){
 
+//declaring vector that will contain all data
+    vector<string> allData;
+
+    ifstream inputFile;
+
+    //accessing the CSV data file
+    inputFile.open("data.csv");
+
+    //creating a clear line variable
+    string line = "";
+
+    //reading csv
+    while (getline(inputFile, line)){
+        
+        //variables to parse out line
+        string var;
+        //creating a string out of the line
+        stringstream inputString(line);
+
+
+        getline(inputString, var, ',');
+        allData.push_back(var);
+
+        getline(inputString, var, ',');
+        allData.push_back(var);
+
+        getline(inputString, var, ',');
+        allData.push_back(var);
+
+
+    }
+
+    for (int i=0; i<allData.size(); i++){
+        cout << allData[i] <<endl;
+    }
+
     return 0;
 }
