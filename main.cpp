@@ -9,75 +9,116 @@ Jane McPheron
 #include <string>
 #include <vector>
 #include <sstream>
+
 using namespace std;
 
 
-// base class
-struct SElement{
+
+
+
+// Base class
+struct SElement {
     virtual void showValueAndType() = 0;
+
 };
 
-struct Empty : SElement{
-    virtual void showValueAndType(){cout<< "Empty";}
+
+
+// Derived classes
+struct Empty : SElement {
+    virtual void showValueAndType() {
+        cout << "Empty";
+    }
+
 };
 
-struct Integer : SElement{
+
+struct Integer : SElement {
     int value;
-    virtual void showValueAndType() {cout << "Int(" <<to_string(value) << ")";}
-    Integer(int val){value = val;}
+    Integer(int val) : value(val) {}
+
+    virtual void showValueAndType() {
+        cout << "Int(" << value << ")";
+    }
 };
 
-struct Float : SElement{
+struct Float : SElement {
     float value;
-    virtual void showValueAndType() {cout << "Float(" <<to_string(value) << ")";}
-    Float(float val){value = val;}
+    Float(float val) : value(val) {}
 
+    virtual void showValueAndType() {
+        cout << "Float(" << value << ")";
+    }
 };
 
-struct String : SElement{
+struct String : SElement {
     string value;
-    virtual void showValueAndType() {cout << "String(" <<value << ")";}
-    String(string val){value = val;}
+    String(const string& val) : value(val) {}
 
+    virtual void showValueAndType() {
+        cout << "String(" << value << ")";
+    }
 };
 
-int main(){
+int main() {
+    vector<SElement*> spreadsheet;
 
-//declaring vector that will contain all data
-    vector<string> allData;
+    // Open the CSV file
+    ifstream csvFile("data.csv");
 
-    ifstream inputFile;
+    // exit if no file
+    if (!csvFile.is_open()) {
+        cerr << "Error: Unable to open the CSV file." << endl;
+        return 1; 
+    }
 
-    //accessing the CSV data file
-    inputFile.open("data.csv");
+    //going through data and sorting it
+    string line;
+    while (getline(csvFile, line)) {
+        istringstream iss(line);
+        string token;
+        while (getline(iss, token, ',')) {
+            
+            if (token.empty()) {
 
-    //creating a clear line variable
-    string line = "";
+                spreadsheet.push_back(new Empty());
 
-    //reading csv
-    while (getline(inputFile, line)){
+            } else if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1]))) {
+                int intValue;
+                istringstream(token) >> intValue;
+
+
+                spreadsheet.push_back(new Integer(intValue));
+
+            } else if (isdigit(token[0]) || token[0] == '-') {
+                float floatValue;
+                istringstream(token) >> floatValue;
+                spreadsheet.push_back(new Float(floatValue));
+
+            } else {
+                spreadsheet.push_back(new String(token));
+
+            }
+
+        }
+    }
+
+    //looping to displaying values
+    for (SElement* element : spreadsheet) {
         
-        //variables to parse out line
-        string var;
-        //creating a string out of the line
-        stringstream inputString(line);
-
-
-        getline(inputString, var, ',');
-        allData.push_back(var);
-
-        getline(inputString, var, ',');
-        allData.push_back(var);
-
-        getline(inputString, var, ',');
-        allData.push_back(var);
+        element->showValueAndType();
+        cout << " ";
 
 
     }
 
-    for (int i=0; i<allData.size(); i++){
-        cout << allData[i] <<endl;
+    //code to delete everything to prevent memory leaks
+    for (SElement* element : spreadsheet) {
+        
+        delete element;
+
+
     }
 
-    return 0;
+
 }
