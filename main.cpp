@@ -10,8 +10,6 @@ Jane McPheron
 #include <vector>
 #include <sstream>
 
-using namespace std;
-
 
 
 
@@ -27,7 +25,7 @@ struct SElement {
 // Derived classes
 struct Empty : SElement {
     virtual void showValueAndType() {
-        cout << "Empty";
+        std::cout << "Empty";
     }
 
 };
@@ -38,7 +36,7 @@ struct Integer : SElement {
     Integer(int val) : value(val) {}
 
     virtual void showValueAndType() {
-        cout << "Int(" << value << ")";
+        std::cout << "Int(" << value << ")";
     }
 };
 
@@ -47,36 +45,41 @@ struct Float : SElement {
     Float(float val) : value(val) {}
 
     virtual void showValueAndType() {
-        cout << "Float(" << value << ")";
+        std::cout << "Float(" << value << ")";
     }
 };
 
 struct String : SElement {
-    string value;
-    String(const string& val) : value(val) {}
+    std::string value;
+    String(const std::string& val) : value(val) {}
 
     virtual void showValueAndType() {
-        cout << "String(" << value << ")";
+        std::cout << "String(" << value << ")";
     }
 };
 
 int main() {
-    vector<SElement*> spreadsheet;
+    std::vector<SElement*> spreadsheet;
 
     // Open the CSV file
-    ifstream csvFile("data.csv");
+    std::ifstream csvFile("data.csv");
 
     // exit if no file
     if (!csvFile.is_open()) {
-        cerr << "Error: Unable to open the CSV file." << endl;
+        std::cerr << "Error: Unable to open the CSV file." << std::endl;
         return 1; 
     }
 
     //going through data and sorting it
-    string line;
+
+
+    //idea: Useful functions stod (string to double), stoi (string to integer)
+    //Use try and catch blocks
+
+    std::string line;
     while (getline(csvFile, line)) {
-        istringstream iss(line);
-        string token;
+        std::istringstream iss(line);
+        std::string token;
         while (getline(iss, token, ',')) {
             
             if (token.empty()) {
@@ -84,15 +87,16 @@ int main() {
                 spreadsheet.push_back(new Empty());
 
             } else if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1]))) {
+                
                 int intValue;
-                istringstream(token) >> intValue;
+                std::istringstream(token) >> intValue;
 
 
                 spreadsheet.push_back(new Integer(intValue));
 
             } else if (isdigit(token[0]) || token[0] == '-') {
                 float floatValue;
-                istringstream(token) >> floatValue;
+                std::istringstream(token) >> floatValue;
                 spreadsheet.push_back(new Float(floatValue));
 
             } else {
@@ -107,7 +111,7 @@ int main() {
     for (SElement* element : spreadsheet) {
         
         element->showValueAndType();
-        cout << " ";
+        std::cout << " ";
 
 
     }
