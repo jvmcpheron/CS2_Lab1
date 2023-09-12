@@ -58,6 +58,17 @@ struct String : SElement {
     }
 };
 
+
+bool containsDot(std::string inputString) {
+    for (char c : inputString) {
+        if (c == '.') {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 int main() {
     std::vector<SElement*> spreadsheet;
 
@@ -78,6 +89,7 @@ int main() {
 
     std::string line;
     while (getline(csvFile, line)) {
+        
         std::istringstream iss(line);
         std::string token;
         while (getline(iss, token, ',')) {
@@ -87,19 +99,19 @@ int main() {
                 spreadsheet.push_back(new Empty());
 
             } else if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1]))) {
-                
-                int intValue;
-                std::istringstream(token) >> intValue;
+                if (containsDot(token)==true){
+                    float floatValue;
+                    std::istringstream(token) >> floatValue;
+                    spreadsheet.push_back(new Float(floatValue));
+                }else{
+                    int intValue;
+                    std::istringstream(token) >> intValue;
 
 
-                spreadsheet.push_back(new Integer(intValue));
+                    spreadsheet.push_back(new Integer(intValue));
+                }
 
-            } else if (isdigit(token[0]) || token[0] == '-') {
-                float floatValue;
-                std::istringstream(token) >> floatValue;
-                spreadsheet.push_back(new Float(floatValue));
-
-            } else {
+            }else {
                 spreadsheet.push_back(new String(token));
 
             }
